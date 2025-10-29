@@ -1,0 +1,7 @@
+class Solution:
+    def smallestNumber(self, n: int) -> int:
+        num_bits = n.bit_length()
+        all_ones = (1 << num_bits)-1
+        if all_ones >= n:
+            return all_ones
+        return (1 << (num_bits + 1)) - 1    
