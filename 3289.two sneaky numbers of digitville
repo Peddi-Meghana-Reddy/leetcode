@@ -1,0 +1,9 @@
+class Solution:
+    def getSneakyNumbers(self, nums: List[int]) -> List[int]:
+        from collections import Counter
+        cnt = Counter(nums)
+        res = []
+        for num, freq in cnt.items():
+            if freq == 2:
+                res.append(num)
+        return res
