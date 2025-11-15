@@ -1,0 +1,29 @@
+class Solution:
+    def numberOfSubstrings(self, s: str) -> int:
+        import math
+        n = len(s)
+        ans = 0
+        max_zero = int(( -1 + math.sqrt(1 + 4*n) ) // 2)
+        for zero in range(max_zero + 1):
+            last_invalid_pos = -1
+            count0 = 0
+            count1 = 0
+            l = 0
+            for r, ch in enumerate(s):
+                if ch == '0':
+                    count0 += 1
+                else:
+                    count1 += 1
+                while l < r:
+                    if s[l] == '0' and count0 > zero:
+                        count0 -= 1
+                        last_invalid_pos = l
+                        l += 1
+                    elif s[l] == '1' and (count1 - 1) >= zero * zero:
+                        count1 -= 1
+                        l += 1
+                    else:
+                        break
+                if count0 == zero and count1 >= zero * zero:
+                    ans += (l - last_invalid_pos)
+        return ans      
