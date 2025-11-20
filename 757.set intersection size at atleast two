@@ -1,0 +1,19 @@
+class Solution:
+    def intersectionSizeTwo(self, intervals: List[List[int]]) -> int:
+        intervals.sort(key=lambda x: (x[1], -x[0]))
+        p1 = p2 = -1
+        count = 0
+        for start, end in intervals:
+            inside_p1 = start <= p1 <= end
+            inside_p2 = start <= p2 <= end
+            if inside_p1 and inside_p2:
+                continue
+            if inside_p1:
+                count += 1
+                p2 = p1
+                p1 = end
+            else:
+                count += 2
+                p2 = end - 1
+                p1 = end
+        return count
