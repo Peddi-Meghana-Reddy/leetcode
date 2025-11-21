@@ -1,0 +1,17 @@
+class Solution:
+    def countPalindromicSubsequence(self, s: str) -> int:
+        n = len(s)
+        first = {}
+        last = {}
+        for i, ch in enumerate(s):
+            if ch not in first:
+                first[ch] = i
+            last[ch] = i
+        result = 0
+        for ch in first:
+            l, r = first[ch], last[ch]
+            if r - l < 2: 
+                continue
+            middle_chars = set(s[l+1 : r])
+            result += len(middle_chars)
+        return result
