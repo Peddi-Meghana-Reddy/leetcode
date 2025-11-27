@@ -1,0 +1,18 @@
+from typing import List
+
+class Solution:
+    def maxSubarraySum(self, nums: List[int], k: int) -> int:
+        INF = 10**30
+        min_prefix = [INF] * k
+        min_prefix[0] = 0  
+        s = 0 
+        ans = -INF 
+        for i, x in enumerate(nums, start=1):
+            s += x
+            r = i % k
+            candidate = s - min_prefix[r]
+            if candidate > ans:
+                ans = candidate
+            if s < min_prefix[r]:
+                min_prefix[r] = s
+        return ans 
