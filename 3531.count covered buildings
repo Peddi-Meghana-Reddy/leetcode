@@ -1,0 +1,28 @@
+from typing import List
+
+class Solution:
+    def countCoveredBuildings(self, n: int, buildings: List[List[int]]) -> int:
+        min_y_in_row = {}
+        max_y_in_row = {}
+        min_x_in_col = {}
+        max_x_in_col = {}
+        for x, y in buildings:
+            if x in min_y_in_row:
+                min_y_in_row[x] = min(min_y_in_row[x], y)
+                max_y_in_row[x] = max(max_y_in_row[x], y)
+            else:
+                min_y_in_row[x] = y
+                max_y_in_row[x] = y
+            if y in min_x_in_col:
+                min_x_in_col[y] = min(min_x_in_col[y], x)
+                max_x_in_col[y] = max(max_x_in_col[y], x)
+            else:
+                min_x_in_col[y] = x
+                max_x_in_col[y] = x
+        covered = 0
+        for x, y in buildings:
+            row_ok = (min_y_in_row[x] < y < max_y_in_row[x])
+            col_ok = (min_x_in_col[y] < x < max_x_in_col[y])
+            if row_ok and col_ok:
+                covered += 1
+        return covered
