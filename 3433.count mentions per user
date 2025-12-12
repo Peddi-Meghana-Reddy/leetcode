@@ -1,0 +1,40 @@
+import heapq
+from dataclasses import dataclass
+from typing import List
+
+@dataclass(order=True, frozen=True)
+class OfflineUser:
+    returnTimestamp: int
+    userId: int
+
+class Solution:
+    def countMentions(self, numberOfUsers: int, events: List[List[str]]) -> List[int]:
+        ans = [0] * numberOfUsers
+        online = [True] * numberOfUsers
+        offline_queue = []  
+        all_mentions_count = 0
+        events.sort(key=lambda e: (int(e[1]), -ord(e[0][0])))
+        for event in events:
+            event_type, t = event[0], int(event[1])
+            while offline_queue and offline_queue[0].returnTimestamp <= t:
+                user = heapq.heappop(offline_queue)
+                online[user.userId] = True
+            if event_type == "MESSAGE":
+                content = event[2]
+                if content == "ALL":
+                    all_mentions_count += 1
+                elif content == "HERE":
+                    for uid in range(numberOfUsers):
+                        if online[uid]:
+                            ans[uid] += 1
+                else:
+                    for part in content.split():
+                        uid = int(part[2:]) 
+                        ans[uid] += 1
+            else:  
+                uid = int(event[2])
+                online[uid] = False
+                heapq.heappush(offline_queue, OfflineUser(t + 60, uid))
+        for uid in range(numberOfUsers):
+            ans[uid] += all_mentions_count
+        return ans
