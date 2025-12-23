@@ -1,0 +1,16 @@
+from typing import List
+import heapq
+
+class Solution:
+    def maxTwoEvents(self, events: List[List[int]]) -> int:
+        events.sort()
+        max_val = 0
+        ans = 0
+        heap = [] 
+        for start, end, value in events:
+            while heap and heap[0][0] < start:
+                _, v = heapq.heappop(heap)
+                max_val = max(max_val, v)
+            ans = max(ans, max_val + value)
+            heapq.heappush(heap, (end, value))
+        return ans
