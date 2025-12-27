@@ -1,0 +1,38 @@
+from collections import defaultdict
+from typing import List
+
+class Solution:
+    def countTrapezoids(self, points: List[List[int]]) -> int:
+        n = len(points)
+        cnt1 = defaultdict(lambda: defaultdict(int))
+        cnt2 = defaultdict(lambda: defaultdict(int))
+        for i in range(n):
+            x1, y1 = points[i]
+            for j in range(i):
+                x2, y2 = points[j]
+                dx, dy = x2 - x1, y2 - y1
+                if dx == 0:
+                    slope = float('inf') 
+                    intercept = x1
+                else:
+                    slope = dy / dx
+                    intercept = (y1 * dx - x1 * dy) / dx
+                if slope == -0.0:
+                    slope = 0.0
+                if intercept == -0.0:
+                    intercept = 0.0
+                cnt1[slope][intercept] += 1
+                midpoint = (x1 + x2 + 2000) * 4000 + (y1 + y2 + 2000)
+                cnt2[midpoint][slope] += 1
+        ans = 0
+        for group in cnt1.values():
+            total = 0
+            for count in group.values():
+                ans += total * count
+                total += count
+        for group in cnt2.values():
+            total = 0
+            for count in group.values():
+                ans -= total * count
+                total += count
+        return ans
