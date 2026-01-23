@@ -1,0 +1,52 @@
+import heapq
+class Solution:
+    def minimumPairRemoval(self, nums: list[int]) -> int:
+        n = len(nums)
+        if n <= 1:
+            return 0
+        already_sorted = True
+        for i in range(n - 1):
+            if nums[i] > nums[i + 1]:
+                already_sorted = False
+                break
+        if already_sorted:
+            return 0
+        prev = list(range(-1, n - 1))
+        next = list(range(1, n + 1))
+        alive = [True] * n
+        heap = []
+        for i in range(n - 1):
+            heapq.heappush(heap, (nums[i] + nums[i + 1], i))
+        ops = 0
+        bad = 0
+        for i in range(n - 1):
+            if nums[i] > nums[i + 1]:
+                bad += 1
+        while bad > 0:
+            while True:
+                s, i = heapq.heappop(heap)
+                j = next[i]
+                if j < n and alive[i] and alive[j] and nums[i] + nums[j] == s:
+                    break
+            if prev[i] >= 0 and nums[prev[i]] > nums[i]:
+                bad -= 1
+            if nums[i] > nums[j]:
+                bad -= 1
+            if next[j] < n and nums[j] > nums[next[j]]:
+                bad -= 1
+            nums[i] += nums[j]
+            alive[j] = False
+            ops += 1
+            nj = next[j]
+            next[i] = nj
+            if nj < n:
+                prev[nj] = i
+            if prev[i] >= 0 and nums[prev[i]] > nums[i]:
+                bad += 1
+            if nj < n and nums[i] > nums[nj]:
+                bad += 1
+            if prev[i] >= 0:
+                heapq.heappush(heap, (nums[prev[i]] + nums[i], prev[i]))
+            if nj < n:
+                heapq.heappush(heap, (nums[i] + nums[nj], i))
+        return ops
