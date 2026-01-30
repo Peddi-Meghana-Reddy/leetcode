@@ -1,0 +1,41 @@
+class Solution:
+    def minimumCost(self, source, target, original, changed, cost):
+        n = len(source)
+        INF = 10**18
+        from collections import defaultdict
+        by_len = defaultdict(set)
+        for o, c in zip(original, changed):
+            by_len[len(o)].add(o)
+            by_len[len(c)].add(c)
+        dist = {}
+        for L in by_len:
+            strs = list(by_len[L])
+            idx = {s: i for i, s in enumerate(strs)}
+            m = len(strs)
+            d = [[INF]*m for _ in range(m)]
+            for i in range(m):
+                d[i][i] = 0
+            for o, c, w in zip(original, changed, cost):
+                if len(o) == L:
+                    u, v = idx[o], idx[c]
+                    d[u][v] = min(d[u][v], w)
+            for k in range(m):
+                for i in range(m):
+                    for j in range(m):
+                        if d[i][k] + d[k][j] < d[i][j]:
+                            d[i][j] = d[i][k] + d[k][j]
+            dist[L] = (strs, idx, d)
+        dp = [INF] * (n + 1)
+        dp[n] = 0
+        for i in range(n - 1, -1, -1):
+            # No operation needed
+            if source[i] == target[i]:
+                dp[i] = dp[i + 1]
+            for L in dist:
+                if i + L <= n:
+                    s = source[i:i+L]
+                    t = target[i:i+L]
+                    strs, idx, d = dist[L]
+                    if s in idx and t in idx:
+                        dp[i] = min(dp[i], d[idx[s]][idx[t]] + dp[i+L])
+        return -1 if dp[0] == INF else dp[0]
