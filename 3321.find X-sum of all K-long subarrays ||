@@ -1,0 +1,52 @@
+from collections import defaultdict
+from sortedcontainers import SortedList
+from typing import List
+class Solution:
+    def findXSum(self, nums: List[int], k: int, x: int) -> List[int]:
+        freq = defaultdict(int)
+        top = SortedList()
+        rest = SortedList()
+        top_sum = 0
+        def value(p):
+            return p[0] * p[1]
+        def remove_pair(p):
+            nonlocal top_sum
+            if p in top:
+                top.remove(p)
+                top_sum -= value(p)
+            else:
+                if p in rest:
+                    rest.remove(p)
+        def add_pair(p):
+            rest.add(p)
+        def rebalance():
+            nonlocal top_sum
+            while len(top) < x and rest:
+                p = rest.pop()
+                top.add(p)
+                top_sum += value(p)
+            while top and rest and rest[-1] > top[0]:
+                small = top.pop(0)
+                big = rest.pop()
+                top_sum -= value(small)
+                top_sum += value(big)
+                rest.add(small)
+                top.add(big)
+        ans = []
+        for i, num in enumerate(nums):
+            oldf = freq[num]
+            if oldf > 0:
+                remove_pair((oldf, num))
+            freq[num] += 1
+            add_pair((freq[num], num))
+            if i >= k:
+                old = nums[i - k]
+                oldf = freq[old]
+                remove_pair((oldf, old))
+                freq[old] -= 1
+                if freq[old] > 0:
+                    add_pair((freq[old], old))
+            rebalance()
+            if i >= k - 1:
+                ans.append(top_sum)
+        return ans
