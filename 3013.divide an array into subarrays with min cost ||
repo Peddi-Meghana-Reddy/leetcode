@@ -1,0 +1,43 @@
+from sortedcontainers import SortedList
+class Solution:
+    def minimumCost(self, nums, k, dist):
+        n = len(nums)
+        k -= 1  
+        left = SortedList()
+        right = SortedList()
+        left_sum = 0
+        def add(x):
+            nonlocal left_sum
+            if len(left) < k:
+                left.add(x)
+                left_sum += x
+            else:
+                if k > 0 and x < left[-1]:
+                    y = left.pop()
+                    left_sum -= y
+                    right.add(y)
+                    left.add(x)
+                    left_sum += x
+                else:
+                    right.add(x)
+        def remove(x):
+            nonlocal left_sum
+            if x in left:
+                left.remove(x)
+                left_sum -= x
+                if right:
+                    y = right.pop(0)
+                    left.add(y)
+                    left_sum += y
+            else:
+                right.remove(x)
+        for i in range(1, dist + 2):
+            add(nums[i])
+        ans = nums[0] + left_sum
+        l = 1
+        for r in range(dist + 2, n):
+            add(nums[r])
+            remove(nums[l])
+            l += 1
+            ans = min(ans, nums[0] + left_sum)
+        return ans
