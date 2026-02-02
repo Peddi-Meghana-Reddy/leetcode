@@ -1,0 +1,37 @@
+class Solution:
+    def maxPower(self, stations, r, k):
+        n = len(stations)
+        pref = [0] * (n + 1)
+        for i in range(n):
+            pref[i+1] = pref[i] + stations[i]
+        power = [0] * n
+        for i in range(n):
+            left = max(0, i - r)
+            right = min(n - 1, i + r)
+            power[i] = pref[right + 1] - pref[left]
+        def can(target):
+            add = [0] * (n + 1)
+            used = 0
+            curr_add = 0
+            for i in range(n):
+                curr_add += add[i]
+                curr_power = power[i] + curr_add
+                if curr_power < target:
+                    need = target - curr_power
+                    used += need
+                    if used > k:
+                        return False
+                    curr_add += need
+                    end = min(n, i + 2*r + 1)
+                    add[end] -= need
+            return True
+        left, right = 0, max(power) + k
+        ans = 0
+        while left <= right:
+            mid = (left + right) // 2
+            if can(mid):
+                ans = mid
+                left = mid + 1
+            else:
+                right = mid - 1
+        return ans
