@@ -1,0 +1,53 @@
+from typing import List
+class Solution:
+    def maxSumTrionic(self, nums: List[int]) -> int:
+        n = len(nums)
+        NEG = -10**30
+        up_sum = NEG
+        down_sum = NEG
+        up2_sum = NEG
+        up_len = 0
+        down_len = 0
+        up2_len = 0
+        ans = NEG
+        for i in range(1, n):
+            new_up_sum = NEG
+            new_down_sum = NEG
+            new_up2_sum = NEG
+            new_up_len = 0
+            new_down_len = 0
+            new_up2_len = 0
+            if nums[i] > nums[i - 1]:
+                if up_len >= 1:
+                    new_up_sum = up_sum + nums[i]
+                    new_up_len = up_len + 1
+                pair_sum = nums[i - 1] + nums[i]
+                if pair_sum > new_up_sum:
+                    new_up_sum = pair_sum
+                    new_up_len = 2
+            if nums[i] < nums[i - 1]:
+                if down_len >= 1:
+                    new_down_sum = down_sum + nums[i]
+                    new_down_len = down_len + 1
+                if up_len >= 2:
+                    cand_sum = up_sum + nums[i]
+                    cand_len = up_len + 1
+                    if cand_sum > new_down_sum:
+                        new_down_sum = cand_sum
+                        new_down_len = cand_len
+            if nums[i] > nums[i - 1]:
+                if up2_len >= 1:
+                    new_up2_sum = up2_sum + nums[i]
+                    new_up2_len = up2_len + 1
+                if down_len >= 2:
+                    cand_sum = down_sum + nums[i]
+                    cand_len = down_len + 1
+                    if cand_sum > new_up2_sum:
+                        new_up2_sum = cand_sum
+                        new_up2_len = cand_len
+            if new_up2_len >= 4:  
+                ans = max(ans, new_up2_sum)
+            up_sum, up_len = new_up_sum, new_up_len
+            down_sum, down_len = new_down_sum, new_down_len
+            up2_sum, up2_len = new_up2_sum, new_up2_len
+        return ans
